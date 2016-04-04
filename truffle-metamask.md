@@ -1,3 +1,5 @@
+**Originally published March 13, 2016. Updated April 4 to reflect some new changes that make it much easier to share accounts between testrpc and Metamask**
+
 ![Truffle and Metamask](http://i.imgur.com/hivuwcF.gif)
 If you're interested in building web apps with [the Ethereum blockchain](https://www.ethereum.org/), you may have found [the Truffle web framework](http://truffle.readthedocs.org/en/latest/) to be a nice fit for your needs.
 

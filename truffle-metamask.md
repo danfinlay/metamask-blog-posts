@@ -25,14 +25,6 @@ Also, you're going to need to run a local blockchain RPC server to test and deve
 
 Next let's make sure we have our `testrpc` running in the background.  Open your terminal and run the command `testrpc`. That's all!  It runs on port `8545` by default, just like most Ethereum RPCs, and so does Truffle.
 
-####A quick note on RPCs
-
-Ethereum RPCs can run in a pre-authenticated mode, that allows you to perform transactions without providing any additional credentials. Obviously this would be a dangerous thing to do on the open web, but for local development, it's the default method that `testrpc` provides.
-
-When you first start `testrpc`, You get a list of initial accounts. These accounts start funded with a whole lot of Ether, so you can practice exchanging funds between accounts.
-
-When you open a normal Truffle Dapp, it takes advantage of your local authenticated rpc, and has access to its account list. The default Truffle dapp just uses the first account in the list.
-
 ####Setting up a simple Truffle Dapp
 
 Next, let's generate a basic Truffle dapp. The default result of `truffle init` is a simple example currency.
@@ -52,9 +44,11 @@ We just deployed a simple alt-coin called `MetaCoin` to our local blockchain, an
 
 If you visit it, you'll see that by default this new Dapp template signs you in with the first account on your `testrpc` account list, which happens to be the same account that got pre-populated with 10k shiny new Metacoins! That's because when you ran `truffle deploy`, Truffle used your first account as the contract publisher, and the contract says to fund the creator's account with 10k coins.
 
-*If you don't see any Metacoin in this account, it may be because you have Metamask already installed. Jump down to [Switching between testrpc and Metamask accounts](./#switchingbetweentestrpcandmetamaskaccounts).*
+You can now send those coins to any account you want, for example, the second account in your `testrpc` list! If you enter an address and a value, and hit send, you'll see your balance go down!
 
-You can now send those coins to any account you want, so let's now set up some Metamask accounts, and then we can fund them!
+If that seems a little too easy, I'd agree with you! That's why Metamask gives the user an opportunity to approve every transaction that a Dapp attempts, and that's more secure!
+
+Let's try connecting to the same account through Metamask, and see how easy it is!
 
 ####Setting up Metamask
 
@@ -62,11 +56,13 @@ Now you'll want to install [Metamask from the Chrome store](https://chrome.googl
 
 *Metamask is currently not listed on the Chrome store, but you get that link because you're an early adopter who we want to support.*
 
-When first setting up Metamask, you'll need to provide a password (used to encrypt your wallet).  It is then going to generate a unique twelve-word phrase that you'll eventually be able to use to recover all your accounts.We haven't done that yet because this is just a developer preview! Please don't use Metamask for important things yet!
+When you first open Metamask, it will let you either create a new wallet *or* restore from a seed. Since both Metamask and `testrpc` use the [bip44 standard](https://github.com/bitcoin/bips/blob/master/bip-0044.mediawiki) for wallet generation, you can `Restore Existing Vault`, and enter the `Mnemonic` that `testrpc` output when you first started it. It should be 12 words long.
 
-By default you get three accounts, all named Wallie. Again, our developer preview is showing. Eventually we're planning to integrate [rich persona management via uPort](https://medium.com/@ConsenSys/uport-the-wallet-is-the-new-browser-b133a83fe73)!).
+You'll also need to provide a password, which is used to encrypt your wallet.
 
-To use Metamask with your local development blockchain, you need to point it at your `testrpc`.
+By default you get three accounts, and they'll be the same as the first three accounts in your `testrpc` list.
+
+To use Metamask with your `testrpc` accounts, you need to point it at your `testrpc` address as its RPC provider..
 
 ![setting metamask testrpc](http://i.imgur.com/D6o2Jq8.png)
 
@@ -80,10 +76,9 @@ You can now sign into the dapp with Metamask.
 
  1. Open Metamask
  2. Enter your password
- 3. Select an account
- 4. Reload the Dapp page (some dapps will notice when you change accounts, but this basic one doesn't)
+ 3. Reload the Dapp page (some dapps will notice when you change accounts, but this basic one doesn't)
 
-You might notice you don't have any Metacoin in this account. That's a good thing! It means your new currency isn't going out to random accounts on the internet!
+You should now see your first account's MetaCoin balance! If you switch accounts, you should see theirs (none, unless you've sent to one!).
 
 To send some Metacoin to one of your Metamask accounts, you're going to need that account's address.
 
@@ -95,31 +90,9 @@ To copy a Metamask account's address:
 
 You now you have a copy of your address to send to!
 
-####Switching between testrpc and Metamask accounts
-
-When Metamask is installed, it intercepts calls and transactions to the Ethereum blockchain, and forwards them to its own RPC (which is currently on the test-network by default).
-
-Since Metamask is managing ethereum connections when it's installed, our Chrome browser right now can't access our `testrpc` accounts, because those accounts are managed by the `testrpc` node itself, so we need to open a browser without metamask.
-
-The easiest way to do this is to open an incognito window.  You can also open another browser.
-
-####Funding your Metamask account
-
-Once you're connected to your `testrpc` accounts again, you can send your Metacoin to whoever you please, including your new Metamask accounts.
-
-You might also notice that your new Metamask accounts don't have any ether in them. The `testrpc` initializes the blockchain with just its starting accounts having any balance, so to fund a Metamask account, you need to send some Ether to those accounts from one of your `testrpc` accounts. (In a future version of testrpc [there will probably be better ways to do this](https://github.com/ethereumjs/testrpc/issues/23)).
-
-Here's a simple shell command to tell your `testrpc` to send 1 ether to your Metamask account.  Let's assume `0x0f91747e3a5df28d81ab30b2d8216c93263c0cf3` is the first account in your `testrpc` list, and `0xbbd220f66e989a493c4d48531ea1e283abc385de` is one of your Metamask accounts.
-
-`1e18` is equal to 1 ether, which will be more than enough for our purposes.
-
-```
-curl -d '{"jsonrpc":"2.0","method":"eth_sendTransaction","params": [{"from":"0x0f91747e3a5df28d81ab30b2d8216c93263c0cf3", "to":"0xbbd220f66e989a493c4d48531ea1e283abc385de", "value": 1e18}], "id":1}' -X POST http://localhost:8545/
-```
-
 ####Sending Metacoin from Metamask: So Meta!
 
-Now if we connect to our Dapp via Metamask, we should see we have some MetaCoin, and if we look in our Metamask plugin, we should have 1 ether too!
+If you connect to your first account, you should see you have some MetaCoin, and if we look in our Metamask plugin, we should have some ether too!
 
 It's important that we have ether, because it's not only a currency for trade, it's also the currency for processing transactions on the Ethereum blockchain. This processing fee is referred to as "gas".
 
@@ -129,7 +102,7 @@ First select the account that has the Metacoin and Ether. Now click the details 
 
 ![Metamask account detail view](http://i.imgur.com/5vbrfuQ.png)
 
-Paste the address into the Dapp window, along with how much Metacoin you'd like to send, and hit `send`!
+Paste the address into the Dapp's `To` field, along with how much Metacoin you'd like to send, and hit `send`!
 
 You should see a notification pop-up, notifying you that you have a transaction to approve in Metamask.
 
@@ -141,9 +114,9 @@ This is one way that Metamask is a safer Ethereum browsing experience than runni
 
 ####Wrapping Up
 
-This has been a simple example, but hopefully shows how Truffle and Metamask work together. They are able to pretty much work out of the box! That's because Truffle helps you write `web3`-compliant dapps. Web3 is a Javascript API declared by the core Ethereum team, and since it was standardized early, tools that take advantage of its common methods work well together.
+This has been a simple example, but hopefully shows how Truffle and Metamask work together. They are able to pretty much work out of the box! That's because Truffle helps you write [web3](https://github.com/ethereum/wiki/wiki/JavaScript-API)-compliant dapps. Web3 is a Javascript API declared by the core Ethereum team, and Metamask injects it directly into the Dapp's context!
 
-This makes connecting to a Truffle Dapp with Metamask not much harder than connecting via your own RPC, but it's **a lot** easier for your users.
+This makes connecting to a Truffle Dapp with Metamask as easy as connecting with your own RPC, but it's **a lot** easier for your users.
 
 That's because Metamask is a hyper-light client that doesn't replicate the entire blockchain locally, but it *does* let users manage their own accounts, so they can casually benefit from the security of private key management, while placing trust for block validation on Metamask's configured RPC provider.
 
